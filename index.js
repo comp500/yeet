@@ -106,7 +106,7 @@ if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 		${labels.join(" ")}
 	}
 
-	${seen.join(" -> ")} [style=invis]
+	${seen.length > 0 ? seen.join(" -> ") + " [style=invis]" : ""}
 	${out.join("\r\n\t")}
 }`);
 	});
