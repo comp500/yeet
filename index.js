@@ -52,12 +52,14 @@ function execute(input, destination) {
 
 	return inputArray.map(value => {
 		if (cached[value] != null) {
-			console.log(cached[value]);
+			if (cached[value] == value) {
+				console.log(`${value} unsolvable!`);
+			}
 			return cached[value];
 		}
 		let map = mapping([value], destination);
 		if (map == null) {
-			console.log(value);
+			console.log(`${value} unsolvable!`);
 			cached[value] = value;
 			return value;
 		}
@@ -70,6 +72,7 @@ function execute(input, destination) {
 
 if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 	rl.question("yeetify? ", answer => {
+		let src = answer.split(" ");
 		let out = execute(answer, "yeet");
 		rl.close();
 
@@ -79,7 +82,7 @@ if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 		let lineNo = 0;
 		out = out.map(line => {
 			let split = line.split(" -> ");
-			let name = split[0];
+			let name = split[split.length - 1];
 			if (seen.includes(name)) {
 				let i = 2;
 				while (seen.includes(name + i)) {
@@ -90,13 +93,22 @@ if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 			seen.push(name);
 			labels.push(name + '[label="' + src[lineNo].replace(/"/g, '\\"') + '"]');
 			lineNo++;
-			split[0] = name;
+			split[split.length - 1] = name;
 			return split.join(" -> ");
 		});
 
-		fs.writeFileSync("labels.txt", labels.join(" "));
-		fs.writeFileSync("invis.txt", seen.join(" -> "));
-		fs.writeFileSync("out2.txt", lines.join("\r\n"));
+		fs.writeFileSync("yeet.gv", `digraph {
+	rankdir=LR;
+	
+	{
+		rank=same;
+		ordering=out;
+		${labels.join(" ")}
+	}
+
+	${seen.join(" -> ")} [style=invis]
+	${out.join("\r\n\t")}
+}`);
 	});
 } else {
 	rl.question("yeetify? ", answer => {
@@ -104,4 +116,3 @@ if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 		rl.close();
 	});
 }
-
