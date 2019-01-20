@@ -1,0 +1,27 @@
+{
+  "name": "yeet-to-anything",
+  "version": "1.0.0",
+  "description": "yeet to anything converter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comp500/yeet.git"
+  },
+  "keywords": [
+    "yeet",
+    "levenshtein"
+  ],
+  "author": "comp500",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/comp500/yeet/issues"
+  },
+  "homepage": "https://github.com/comp500/yeet#readme",
+  "dependencies": {
+    "fast-levenshtein": "^2.0.6",
+    "word-list": "^2.0.0"
+  }
+}
