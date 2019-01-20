@@ -53,13 +53,13 @@ function execute(input, destination) {
 	return inputArray.map(value => {
 		if (cached[value] != null) {
 			if (cached[value] == value) {
-				console.log(`${value} unsolvable!`);
+				console.log(`${value} is already yeet!`);
 			}
 			return cached[value];
 		}
 		let map = mapping([value], destination);
 		if (map == null) {
-			console.log(`${value} unsolvable!`);
+			console.log(`${value} is already yeet!`);
 			cached[value] = value;
 			return value;
 		}
