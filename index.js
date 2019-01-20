@@ -1,19 +1,17 @@
 const levenshtein = require("fast-levenshtein");
 const wordListPath = require("word-list");
 const fs = require("fs");
+const rl = require("readline").createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
 
 const wordArray = fs
 	.readFileSync(wordListPath, "utf8")
 	.split("\n")
 	.map(val => val.toLowerCase());
-const inputArray = "quat"
-	.toLowerCase()
-	.replace(/[^\w ]/g, "")
-	.split(" ");
-const destination = "yeet";
-wordArray.push(destination);
 
-function mapping(previous) {
+function mapping(previous, destination) {
 	let last = previous[previous.length - 1];
 	let newValues = wordArray.filter(word => levenshtein.get(word, last) == 1);
 	if (newValues.includes(destination)) {
@@ -34,28 +32,76 @@ function mapping(previous) {
 				(a, b) =>
 					levenshtein.get(a, destination) - levenshtein.get(b, destination)
 			)
-			.reduce((acc, value) => acc || mapping(previous.concat([value])), null);
+			.reduce(
+				(acc, value) => acc || mapping(previous.concat([value]), destination),
+				null
+			);
 	} else {
 		return null;
 	}
 }
 
-let cached = {};
+function execute(input, destination) {
+	let inputArray = input
+		.toLowerCase()
+		.replace(/[^\w ]/g, "")
+		.split(" ");
+	wordArray.push(destination);
 
-let out = inputArray.map(value => {
-	if (cached[value] != null) {
-		console.log(cached[value]);
-		return cached[value];
-	}
-	let map = mapping([value]);
-	if (map == null) {
-		console.log(value);
-		cached[value] = value;
-		return value;
-	}
-	let done = map.join(" -> ");
-	console.log(done);
-	cached[value] = done;
-	return done;
-});
-fs.writeFileSync("out1.txt", out.join("\r\n"));
+	let cached = {};
+
+	return inputArray.map(value => {
+		if (cached[value] != null) {
+			console.log(cached[value]);
+			return cached[value];
+		}
+		let map = mapping([value], destination);
+		if (map == null) {
+			console.log(value);
+			cached[value] = value;
+			return value;
+		}
+		let done = map.reverse().join(" -> ");
+		console.log(done);
+		cached[value] = done;
+		return done;
+	});
+}
+
+if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
+	rl.question("yeetify? ", answer => {
+		let out = execute(answer, "yeet");
+		rl.close();
+
+		let seen = [];
+		let labels = [];
+
+		let lineNo = 0;
+		out = out.map(line => {
+			let split = line.split(" -> ");
+			let name = split[0];
+			if (seen.includes(name)) {
+				let i = 2;
+				while (seen.includes(name + i)) {
+					i++;
+				}
+				name = name + i;
+			}
+			seen.push(name);
+			labels.push(name + '[label="' + src[lineNo].replace(/"/g, '\\"') + '"]');
+			lineNo++;
+			split[0] = name;
+			return split.join(" -> ");
+		});
+
+		fs.writeFileSync("labels.txt", labels.join(" "));
+		fs.writeFileSync("invis.txt", seen.join(" -> "));
+		fs.writeFileSync("out2.txt", lines.join("\r\n"));
+	});
+} else {
+	rl.question("yeetify? ", answer => {
+		execute(answer, "yeet");
+		rl.close();
+	});
+}
+
