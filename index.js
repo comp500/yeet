@@ -97,7 +97,9 @@ if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 			return split.join(" -> ");
 		});
 
-		fs.writeFileSync("yeet.gv", `digraph {
+		fs.writeFileSync(
+			"yeet.gv",
+			`digraph {
 	rankdir=LR;
 	
 	{
@@ -108,7 +110,8 @@ if (process.argv.length > 2 && process.argv[2].trim().toLowerCase() == "dot") {
 
 	${seen.length > 0 ? seen.join(" -> ") + " [style=invis]" : ""}
 	${out.join("\r\n\t")}
-}`);
+}`
+		);
 	});
 } else {
 	rl.question("yeetify? ", answer => {
